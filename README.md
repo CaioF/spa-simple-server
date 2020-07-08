@@ -23,7 +23,7 @@ npm install
 
 `npm run dev` *runs nodemon dev server*
 `node simple-server.js` *runs normal node server*
-additionally both the above commands can be followed by `-init` i.e. `node simple-server.js -init` this will initialized and add mock data to the `pseudo-db.json` file.
+additionally both the above commands can be followed by `-init` i.e. `node simple-server.js -init` this will initialize and populate the `pseudo-db.json` file with mock data.
 `npm run lint` *runs code linting*
 `npm run test` *runs code testing*
 
