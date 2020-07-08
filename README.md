@@ -7,14 +7,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-
 ```
 Node.js version >= 10
 npm version >= 6
 ```
 
 ### Installing
-
 
 ```
 git clone 
@@ -26,7 +24,6 @@ npm run dev
 ## Built With
 
 * [Node.js](https://nodejs.org/en/)
-
 
 ## Authors
 
