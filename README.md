@@ -18,8 +18,15 @@ npm version >= 6
 git clone 
 cd spa-simple-server/
 npm install
-npm run dev
 ```
+### Deploying
+
+`npm run dev` *runs nodemon dev server*
+`node simple-server.js` *runs normal node server*
+additionally both the above commands can be followed by `-init` i.e. `node simple-server.js -init` this will initialized and add mock data to the `pseudo-db.json` file.
+`npm run lint` *runs code linting*
+`npm run test` *runs code testing*
+
 
 ## Built With
 

@@ -1,5 +1,4 @@
 	///Check node version & basic imports///
-if (Number(process.version.slice(1).split('.')[0]) < 10) throw new Error('Node 10.0.0 or higher is required. Update your Node');
 const fs              = require('fs');
 const bodyParser      = require('body-parser');
 const path            = require('path');
@@ -8,6 +7,8 @@ const app             = express();
 const logger          = require('./modules/logger');
 const port            = process.env.PORT || 3000;
 
+if (Number(process.version.slice(1).split('.')[0]) < 10) logger.error('Node 10.0.0 or higher is required. Update your Node');
+
 
 	///Import and init db & functions///
 const low = require('lowdb');
@@ -15,7 +16,7 @@ const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync('./storage-files/pseudo-db.json');
 const db = low(adapter);
 
-function updateComment(in_comment) //find and update a comment based on id
+function updateComment(in_comment)//find and update a comment based on id
 {
 	db.get('comments')
   	  .find({ "id": in_comment.id })
@@ -28,34 +29,51 @@ function updateComment(in_comment) //find and update a comment based on id
   	  .write();
 }
 
-function deleteComment(in_id) //find and delete a comment based on id
+function deleteComment(in_id)//find and delete a comment based on id
 {
 	db.get('comments')
   	  .remove({ "id": in_id })
   	  .write();
 }
 
-if (process.argv[2] == '-init') //if 'node simple-server.js -init' -> init pseudo-db.json file with mock data
+function getComments(in_taskId)//find return a collection of comments based on id
+{
+	
+}
+
+if (process.argv[2] == '-init')//if 'node simple-server.js -init' -> init pseudo-db.json file with mock data
 {
 	db.defaults({comments: []}).write();
-	db.get('comments').push({"id": "000", "taskId": "000", "commentator": "000", "time": "000", "content": "000"}).write();
-	logger.log(`-init arg called - test data added to db`);
+	db.get('comments').push({"id": "0", "taskId": "0", "commentator": "0", "time": "0", "content": "0"}).write();
+	logger.cmd(`'-init' arg called, test data added to pseudo-db.json`);
 }
 
 
 	///Server paths and middleware///
-/**
-	POST api/data сохраняет бинарный файл 
-	GET api/comments  возвращает все комментарии
-	GET tasks/:taskId/comments  возвращает комментарий по id
-**/
-
 const jsonParser = bodyParser.json();
 app.use(jsonParser);
 
-app.use('/api', express.static(path.join(__dirname, 'storage-files'))); //GET api/data возвращает бинарный файл
+app.use('/api', express.static(path.join(__dirname, 'storage-files')));//GET api/data возвращает бинарный файл
 
-app.post('/api/comments', (req, res) => { //POST api/comments добавляет коммент
+app.post('/api/data', (req, res) => {//POST api/data сохраняет бинарный файл 
+
+});
+
+app.get('/api/comments', (req, res) => {//GET api/comments возвращает все комментарии 
+	res.setHeader('Content-Type', 'application/json');
+	try
+	{
+		res.send(db.get('comments').value());
+	}
+	catch
+	{
+		res.status(400).end();
+		logger.error(`Failed GET api/comments\nres: ${res}`);
+	}
+});
+
+app.post('/api/comments', (req, res) => {//POST api/comments добавляет один коммент
+	if (req.header('Content-Type') != 'application/json') logger.warn('POST api/comments request header must be application/json');
 	try
 	{
 		db.get('comments').push(req.body).write();
@@ -64,13 +82,13 @@ app.post('/api/comments', (req, res) => { //POST api/comments добавляет
 	}
 	catch
 	{
-		res.statusMessage = "req.body could not be read by db";
 		res.status(400).end();
-		logger.warn(`POST api/comments\nreq: ${req.body}`);
+		logger.error(`Failed POST api/comments\nreq: ${req.body}`);
 	}
 });
 
-app.delete('/api/comments/:id', (req, res) => { //DELETE api/comments/:id удаляет коммент по id
+app.delete('/api/comments/:id', (req, res) => {//DELETE api/comments/:id удаляет коммент по id
+	if (req.header('Content-Type') != 'application/json') logger.warn('DELETE api/comments/:id request header must be application/json');
 	try
 	{
 		deleteComment(req.params.id);
@@ -79,11 +97,23 @@ app.delete('/api/comments/:id', (req, res) => { //DELETE api/comments/:id уда
 	}
 	catch
 	{
-		res.statusMessage = "req.params could not be read by db";
 		res.status(400).end();
-		logger.warn(`DELETE api/comments/:id\nreq: ${req.params}`);
+		logger.error(`Failed DELETE api/comments/:id\nreq: ${req.params}`);
 	}
-})
+});
+
+app.get('tasks/:taskId/comments', (req, res) => {//GET tasks/:taskId/comments возврашает коментарий по taskId
+	if (req.header('Content-Type') != 'application/json') logger.warn('GET tasks/:taskId/comments request header must be application/json');
+	res.setHeader('Content-Type', 'application/json');
+	try
+	{
+
+	}
+	catch
+	{
+
+	}
+});
 
 
 app.listen(port);
