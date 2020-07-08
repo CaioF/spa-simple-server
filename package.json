@@ -1,0 +1,41 @@
+{
+  "name": "spa-simple-server",
+  "version": "1.0.0",
+  "description": "simple server created for qoollo spa.",
+  "main": "simple-server.js",
+  "scripts": {
+    "test": "jest --passWithNoTests",
+    "lint": "eslint --ignore-path .gitignore . --fix",
+    "start": "node simple-server.js",
+    "dev": "npx nodemon server.js"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/"
+  },
+  "author": "Caio Fleury",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/"
+  },
+  "homepage": "https://github.com/",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "jest": "^25.4.0",
+    "nodemon": "^2.0.3"
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true
+    }
+  },
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "eslint-plugin-jest": "^23.8.2",
+    "node-json-db": "^1.1.0",
+    "request": "^2.88.2"
+  }
+}
