@@ -1,4 +1,4 @@
-	///Check node version & basic imports///
+///Check node version & basic imports///
 const fs              = require('fs');
 const bodyParser      = require('body-parser');
 const path            = require('path');
@@ -10,31 +10,31 @@ const port            = process.env.PORT || 3000;
 if (Number(process.version.slice(1).split('.')[0]) < 10) logger.error('Node 10.0.0 or higher is required. Update your Node');
 
 
-	///Import and init db & functions///
+///Import and init db & functions///
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const { json } = require('body-parser');
 const adapter = new FileSync('./storage-files/pseudo-db.json');
 const db = low(adapter);
-
+/** 
 function updateComment(in_comment)//find and update a comment based on id
 {
-	db.get('comments')
-  	  .find({ "id": in_comment.id })
-  	  .assign({
-			"id": in_comment.id,
-			"taskId": in_comment.taskId,
-			"commentator": in_comment.commentator,
-			"time": in_comment.time,
-			"content": in_comment.content})
-  	  .write();
+    db.get('comments')
+        .find({ 'id': in_comment.id })
+        .assign({
+            'id': in_comment.id,
+            'taskId': in_comment.taskId,
+            'commentator': in_comment.commentator,
+            'time': in_comment.time,
+            'content': in_comment.content})
+        .write();
 }
+**/
 
 function deleteComment(in_id)//find and delete a comment based on id
 {
 	db.get('comments')
-  	  .remove({ "id": in_id })
-  	  .write();
+		.remove({ 'id': in_id })
+		.write();
 }
 
 function getComments(in_taskId)//find return a collection of comments based on id
@@ -43,7 +43,7 @@ function getComments(in_taskId)//find return a collection of comments based on i
 	let out_comments = [];
 	values.forEach( (i) => {
 		if (i.taskId == in_taskId)
-		out_comments.push(i);
+			out_comments.push(i);
 	});
 	return out_comments;
 }
@@ -51,12 +51,12 @@ function getComments(in_taskId)//find return a collection of comments based on i
 if (process.argv[2] == '-init')//if 'node simple-server.js -init' -> init pseudo-db.json file with mock data
 {
 	db.defaults({comments: []}).write();
-	db.get('comments').push({"id": "0", "taskId": "0", "commentator": "0", "time": "0", "content": "0"}).write();
-	logger.cmd(`'-init' arg called, test data added to pseudo-db.json`);
+	db.get('comments').push({'id': '0', 'taskId': '0', 'commentator': '0', 'time': '0', 'content': '0'}).write();
+	logger.cmd('\'-init\' arg called, test data added to pseudo-db.json');
 }
 
 
-	///Server paths and middleware///
+///Server paths and middleware///
 const jsonParser = bodyParser.json();
 app.use(jsonParser);
 
@@ -66,15 +66,15 @@ app.post('/api/data', (req, res) => {//POST api/data сохраняет бина
 	let new_file = fs.createWriteStream('./storage-files/data');
 	req.pipe(new_file);
 	new_file.on('finish', () => {
-	  new_file.close( () => {
-		res.status(200).end();
-		logger.log('Rewrote data file');
-	  });
+		new_file.close( () => {
+			res.status(200).end();
+			logger.log('Rewrote data file');
+		});
 	}).on('error', (err) => {
 		res.status(400).end();
-		logger.error(`Failed to POST api/data`);
-		fs.unlink('./storage-files/data'); // Delete the file async ob err.
-  });
+		logger.error(`Failed to POST api/data\n${err}`);
+		fs.unlink('./storage-files/data'); // Delete the file async on err.
+	});
 });
 
 app.get('/api/comments', (req, res) => {//GET api/comments возвращает все комментарии 
@@ -83,10 +83,10 @@ app.get('/api/comments', (req, res) => {//GET api/comments возвращает 
 	{
 		res.send(db.get('comments').value());
 	}
-	catch
+	catch(err)
 	{
 		res.status(400).end();
-		logger.error(`Failed GET api/comments`);
+		logger.error(`Failed GET api/comments\n${err}`);
 	}
 });
 
@@ -98,10 +98,10 @@ app.post('/api/comments', (req, res) => {//POST api/comments добавляет 
 		res.status(200).end();
 		logger.log(`Added ID: ${req.body.id}`);
 	}
-	catch
+	catch(err)
 	{
 		res.status(400).end();
-		logger.error(`Failed POST api/comments`);
+		logger.error(`Failed POST api/comments\n${err}`);
 	}
 });
 
@@ -113,10 +113,10 @@ app.delete('/api/comments/:id', (req, res) => {//DELETE api/comments/:id уда�
 		res.status(200).end();
 		logger.log(`Deleted ID: ${req.params.id}`);
 	}
-	catch
+	catch(err)
 	{
 		res.status(400).end();
-		logger.error(`Failed DELETE api/comments/:id`);
+		logger.error(`Failed DELETE api/comments/:id\n${err}`);
 	}
 });
 
@@ -127,10 +127,10 @@ app.get('/tasks/:taskId/comments', (req, res) => {//GET tasks/:taskId/comments �
 	{
 		res.send(getComments(req.params.taskId));
 	}
-	catch
+	catch(err)
 	{
 		res.status(400).end();
-		logger.error(`Failed GET tasks/:taskId/comments`);
+		logger.error(`Failed GET tasks/:taskId/comments\n${err}`);
 	}
 });
 
