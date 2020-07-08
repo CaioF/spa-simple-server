@@ -1,4 +1,4 @@
-# spa-simple-server
+# spa-simple-server [![Build Status](https://travis-ci.com/CaioF/spa-simple-server.svg?branch=master)](https://travis-ci.com/CaioF/spa-simple-server)
 Express server created for qoollo.
 
 ## Getting Started
