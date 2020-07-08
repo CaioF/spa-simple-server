@@ -9,11 +9,6 @@ const logger          = require('./modules/logger');
 const port            = process.env.PORT || 3000;
 
 
-	///Server middleware///
-app.use('/api', express.static(path.join(__dirname, 'storage-files')));
-app.use(bodyParser.json());
-
-
 	///Import and init db & functions///
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
@@ -30,7 +25,14 @@ function updateComment(in_comment) //find and update a comment based on id
 			"commentator": in_comment.commentator,
 			"time": in_comment.time,
 			"content": in_comment.content})
-  	  .write()
+  	  .write();
+}
+
+function deleteComment(in_id) //find and delete a comment based on id
+{
+	db.get('comments')
+  	  .remove({ "id": in_id })
+  	  .write();
 }
 
 if (process.argv[2] == '-init') //if 'node simple-server.js -init' -> init pseudo-db.json file with mock data
@@ -41,16 +43,48 @@ if (process.argv[2] == '-init') //if 'node simple-server.js -init' -> init pseud
 }
 
 
-	///Server paths///
+	///Server paths and middleware///
 /**
-	GET api/data  возвращает бинарный файл 
 	POST api/data сохраняет бинарный файл 
 	GET api/comments  возвращает все комментарии
 	GET tasks/:taskId/comments  возвращает комментарий по id
-	POST api/comments  добавляет коммент
-	DELETE api/comments/id удаляет коммент по id
 **/
+
+const jsonParser = bodyParser.json();
+app.use(jsonParser);
+
+app.use('/api', express.static(path.join(__dirname, 'storage-files'))); //GET api/data возвращает бинарный файл
+
+app.post('/api/comments', (req, res) => { //POST api/comments добавляет коммент
+	try
+	{
+		db.get('comments').push(req.body).write();
+		res.status(200).end();
+		logger.log(`Added ID: ${req.body.id}`);
+	}
+	catch
+	{
+		res.statusMessage = "req.body could not be read by db";
+		res.status(400).end();
+		logger.warn(`POST api/comments\nreq: ${req.body}`);
+	}
+});
+
+app.delete('/api/comments/:id', (req, res) => { //DELETE api/comments/:id удаляет коммент по id
+	try
+	{
+		deleteComment(req.params.id);
+		res.status(200).end();
+		logger.log(`Deleted ID: ${req.params.id}`);
+	}
+	catch
+	{
+		res.statusMessage = "req.params could not be read by db";
+		res.status(400).end();
+		logger.warn(`DELETE api/comments/:id\nreq: ${req.params}`);
+	}
+})
 
 
 app.listen(port);
-logger.log(`Server listening at port ${port}`);
+logger.ready(`Server listening at port ${port}\nEntry point: ${process.argv[1]}`);
