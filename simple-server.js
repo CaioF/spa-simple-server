@@ -60,9 +60,9 @@ if (process.argv[2] == '-init')//if 'node simple-server.js -init' -> init pseudo
 const jsonParser = bodyParser.json();
 app.use(jsonParser);
 
-app.use('/api', express.static(path.join(__dirname, 'storage-files')));//GET api/data возвращает бинарный файл
+app.use('/api', express.static(path.join(__dirname, 'storage-files/static')));//GET api/data возвращает бинарный файл
 
-app.post('/api/data', (req, res) => {//POST api/data сохраняет бинарный файл 
+app.post('/api/data', (req, res) => {//POST /api/data сохраняет бинарный файл 
 	let new_file = fs.createWriteStream('./storage-files/data');
 	req.pipe(new_file);
 	new_file.on('finish', () => {
@@ -72,12 +72,12 @@ app.post('/api/data', (req, res) => {//POST api/data сохраняет бина
 		});
 	}).on('error', (err) => {
 		res.status(400).end();
-		logger.error(`Failed to POST api/data\n${err}`);
+		logger.error(`Failed to POST /api/data\n${err}`);
 		fs.unlink('./storage-files/data'); // Delete the file async on err.
 	});
 });
 
-app.get('/api/comments', (req, res) => {//GET api/comments возвращает все комментарии 
+app.get('/api/comments', (req, res) => {//GET /api/comments возвращает все комментарии 
 	res.setHeader('Content-Type', 'application/json');
 	try
 	{
@@ -86,11 +86,11 @@ app.get('/api/comments', (req, res) => {//GET api/comments возвращает 
 	catch(err)
 	{
 		res.status(400).end();
-		logger.error(`Failed GET api/comments\n${err}`);
+		logger.error(`Failed GET /api/comments\n${err}`);
 	}
 });
 
-app.post('/api/comments', (req, res) => {//POST api/comments добавляет один коммент
+app.post('/api/comments', (req, res) => {//POST /api/comments добавляет один коммент
 	if (req.header('Content-Type') != 'application/json') logger.warn('POST api/comments request header must be application/json');
 	try
 	{
@@ -101,11 +101,11 @@ app.post('/api/comments', (req, res) => {//POST api/comments добавляет 
 	catch(err)
 	{
 		res.status(400).end();
-		logger.error(`Failed POST api/comments\n${err}`);
+		logger.error(`Failed POST /api/comments\n${err}`);
 	}
 });
 
-app.delete('/api/comments/:id', (req, res) => {//DELETE api/comments/:id удаляет коммент по id
+app.delete('/api/comments/:id', (req, res) => {//DELETE /api/comments/:id удаляет коммент по id
 	if (req.header('Content-Type') != 'application/json') logger.warn('DELETE api/comments/:id request header must be application/json');
 	try
 	{
@@ -116,11 +116,11 @@ app.delete('/api/comments/:id', (req, res) => {//DELETE api/comments/:id уда�
 	catch(err)
 	{
 		res.status(400).end();
-		logger.error(`Failed DELETE api/comments/:id\n${err}`);
+		logger.error(`Failed DELETE /api/comments/:id\n${err}`);
 	}
 });
 
-app.get('/tasks/:taskId/comments', (req, res) => {//GET tasks/:taskId/comments возврашает коментарий по taskId
+app.get('/tasks/:taskId/comments', (req, res) => {//GET /tasks/:taskId/comments возврашает коментарий по taskId
 	if (req.header('Content-Type') != 'application/json') logger.warn('GET tasks/:taskId/comments request header must be application/json');
 	res.setHeader('Content-Type', 'application/json');
 	try
@@ -130,10 +130,28 @@ app.get('/tasks/:taskId/comments', (req, res) => {//GET tasks/:taskId/comments �
 	catch(err)
 	{
 		res.status(400).end();
-		logger.error(`Failed GET tasks/:taskId/comments\n${err}`);
+		logger.error(`Failed GET /tasks/:taskId/comments\n${err}`);
 	}
 });
 
+app.get('/user.json', (req, res) => {//GET /user.json?username=*** возврашает пользователя по username
+	res.setHeader('Content-Type', 'application/json');
+	try
+	{
+		const users = require('./storage-files/user.json').users;
+		let username = req.query.username;
+		users.forEach( (i) => {
+			if (i.username == username)
+			res.send(i);
+		});
+	}
+	catch(err)
+	{
+		res.status(400).end();
+		logger.error(`Failed GET /user.json?username=***\n${err}`);
+	}
+
+});
 
 app.listen(port);
 logger.ready(`Server listening at port ${port}\nEntry point: ${process.argv[1]}`);
