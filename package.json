@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/"
+    "url": "https://github.com/CaioF/spa-simple-server"
   },
   "author": "Caio Fleury",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/"
+    "url": "https://github.com/CaioF/spa-simple-server/issues"
   },
-  "homepage": "https://github.com/",
+  "homepage": "https://github.com/CaioF/spa-simple-server",
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",

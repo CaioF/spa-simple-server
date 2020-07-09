@@ -1,29 +1,49 @@
 /*
 Logger class for easy and aesthetically pleasing console logging 
 */
-const chalk = require('chalk');
-const moment = require('moment');
+const chalk           = require('chalk');
+const moment          = require('moment');
+const fs              = require('fs');
 
 exports.log = (content, type = 'log') => {
+	const stream = fs.createWriteStream("./src/local.log", {flags:'a'});
 	const timestamp = `[${moment().format('YYYY-MM-DD HH:mm:ss')}]:`;
 	switch (type) {
 	case 'log': {
-		return console.log(`${timestamp} ${chalk.bgBlue(type.toUpperCase())} ${content} `);
+		let logged = `${timestamp} ${content} `;
+		stream.write(logged + "\n");
+		stream.end();
+		return console.log(chalk.bgBlue(type.toUpperCase()), logged);
 	}
 	case 'warn': {
-		return console.log(`${timestamp} ${chalk.black.bgYellow(type.toUpperCase())} ${content} `);
+		let logged = `${timestamp} ${content} `;
+		stream.write(logged + "\n");
+		stream.end();
+		return console.log(chalk.black.bgYellow(type.toUpperCase()), logged);
 	}
 	case 'error': {
-		return console.log(`${timestamp} ${chalk.bgRed(type.toUpperCase())} ${content} `);
+		let logged = `${timestamp} ${content} `;
+		stream.write(logged + "\n");
+		stream.end();
+		return console.log(chalk.bgRed(type.toUpperCase()), logged);
 	}
 	case 'debug': {
-		return console.log(`${timestamp} ${chalk.green(type.toUpperCase())} ${content} `);
+		let logged = `${timestamp} ${content} `;
+		stream.write(logged + "\n");
+		stream.end();
+		return console.log(chalk.green(type.toUpperCase()), logged);
 	}
 	case 'cmd': {
-		return console.log(`${timestamp} ${chalk.black.bgWhite(type.toUpperCase())} ${content}`);
+		let logged = `${timestamp} ${content} `;
+		stream.write(logged + "\n")
+		stream.end();
+		return console.log(chalk.black.bgWhite(type.toUpperCase()), logged);
 	}
 	case 'ready': {
-		return console.log(`${timestamp} ${chalk.black.bgGreen(type.toUpperCase())} ${content}`);
+		let logged = `${timestamp} ${content} `;
+		stream.write(logged + "\n")
+		stream.end();
+		return console.log(chalk.black.bgGreen(type.toUpperCase()), logged);
 	}
 	default: throw new TypeError('Logger type must be either warn, debug, log, ready, cmd or error.');
 	}

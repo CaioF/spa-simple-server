@@ -1,5 +1,5 @@
 ///Check node version & basic imports///
-const fs              = require('fs');
+const fs= require('fs');
 const bodyParser      = require('body-parser');
 const path            = require('path');
 const express         = require('express');
@@ -13,7 +13,7 @@ if (Number(process.version.slice(1).split('.')[0]) < 10) logger.error('Node 10.0
 ///Import and init db & functions///
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('./storage-files/pseudo-db.json');
+const adapter = new FileSync('./src/pseudo-db.json');
 const db = low(adapter);
 /** 
 function updateComment(in_comment)//find and update a comment based on id
@@ -60,10 +60,10 @@ if (process.argv[2] == '-init')//if 'node simple-server.js -init' -> init pseudo
 const jsonParser = bodyParser.json();
 app.use(jsonParser);
 
-app.use('/api', express.static(path.join(__dirname, 'storage-files/static')));//GET api/data возвращает бинарный файл
+app.use('/api', express.static(path.join(__dirname, 'src/static')));//GET api/data возвращает бинарный файл
 
 app.post('/api/data', (req, res) => {//POST /api/data сохраняет бинарный файл 
-	let new_file = fs.createWriteStream('./storage-files/data');
+	let new_file = fs.createWriteStream('./static/src/data');
 	req.pipe(new_file);
 	new_file.on('finish', () => {
 		new_file.close( () => {
@@ -73,7 +73,7 @@ app.post('/api/data', (req, res) => {//POST /api/data сохраняет бин�
 	}).on('error', (err) => {
 		res.status(400).end();
 		logger.error(`Failed to POST /api/data\n${err}`);
-		fs.unlink('./storage-files/data'); // Delete the file async on err.
+		fs.unlink('./src/data'); // Delete the file async on err.
 	});
 });
 
@@ -138,7 +138,7 @@ app.get('/user.json', (req, res) => {//GET /user.json?username=*** возвра�
 	res.setHeader('Content-Type', 'application/json');
 	try
 	{
-		const users = require('./storage-files/user.json').users;
+		const users = require('./src/user.json').users;
 		let username = req.query.username;
 		users.forEach( (i) => {
 			if (i.username == username)
