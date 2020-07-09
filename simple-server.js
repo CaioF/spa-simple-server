@@ -142,7 +142,7 @@ app.get('/user.json', (req, res) => {//GET /user.json?username=*** возвра�
 		let username = req.query.username;
 		users.forEach( (i) => {
 			if (i.username == username)
-			res.send(i);
+				res.send(i);
 		});
 	}
 	catch(err)
