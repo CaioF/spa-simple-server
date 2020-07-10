@@ -69,18 +69,22 @@ app.use(cors());
 app.use('/api', express.static(path.join(__dirname, 'storage')));//GET api/data возвращает бинарный файл
 
 app.post('/api/data', (req, res) => {//POST /api/data сохраняет бинарный файл 
-    let new_file = fs.createWriteStream('./storage/data');
-    req.pipe(new_file);
-    new_file.on('finish', () => {
-        new_file.close(() => {
-            res.status(200).end();
-            logger.log('Rewrote data file');
-        });
-    }).on('error', (err) => {
+    if (req.header('Content-Type') != 'application/json') logger.warn('POST /api/data request header must be application/json');
+    let file_stream = fs.createWriteStream('./storage/data');
+    let buf = Buffer.from(req.body.data, 'base64');
+    try
+    {
+        file_stream.write(buf);
+        file_stream.end();
+        res.status(200).end();
+        logger.log('Rewrote data file');
+    }
+    catch(err)
+    {
+        file_stream.end();
         res.status(400).end();
         logger.error(`Failed to POST /api/data\n${err}`);
-        fs.unlink('./storage/data'); // Delete the file async on err.
-    });
+    }
 });
 
 app.get('/api/comments', (req, res) => {//GET /api/comments возвращает все комментарии 
