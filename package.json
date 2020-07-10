@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --passWithNoTests",
     "lint": "eslint --ignore-path .gitignore . --fix",
-    "start": "node simple-server.js",
+    "start": "node simple-server.js -init",
     "dev": "npx nodemon server.js"
   },
   "engines": {
@@ -36,6 +36,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "chalk": "^4.0.0",
+    "cors": "^2.8.5",
     "eslint-plugin-jest": "^23.8.2",
     "express": "^4.17.1",
     "lowdb": "^1.0.0",
