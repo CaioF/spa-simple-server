@@ -40,7 +40,7 @@
     "eslint-plugin-jest": "^23.8.2",
     "express": "^4.17.1",
     "lowdb": "^1.0.0",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "moment-duration-format": "^2.3.2",
     "request": "^2.88.2"
   }
